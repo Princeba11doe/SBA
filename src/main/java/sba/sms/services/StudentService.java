@@ -21,6 +21,44 @@ import java.util.List;
  * generate a logger file.
  */
 
-public class StudentService {
+public class StudentService implements StudentI {
+    @Override
+    public void createStudent(Student student) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.persist(student);
+            transaction.commit();
+        }
+    }
 
+    @Override
+    public List<Student> getAllStudents() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Student", Student.class).list();
+        }
+    }
+
+    @Override
+    public Student getStudentByEmail(String email) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(Student.class, email);
+        }
+    }
+
+    @Override
+    public boolean validateStudent(String email, String password) {
+        Student student = getStudentByEmail(email);
+        return student != null && student.getPassword().equals(password);
+    }
+
+    @Override
+    public void registerStudentToCourse(String email, int courseId) {
+        // Logic to register a course to student
+    }
+
+    @Override
+    public List<Course> getStudentCourses(String email) {
+        // Logic to fetch student courses
+        return null;
+    }
 }
